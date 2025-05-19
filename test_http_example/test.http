@@ -1,0 +1,30 @@
+### get example
+GET http://localhost/api/example_get/?example_id=123
+
+### post example
+POST http://localhost/api/example_post/
+
+{
+    "example_parameter1": "asdf",
+    "example_parameter2": [1,2,3]
+}
+
+### patch example
+PATCH http://localhost/api/example_patch/
+
+{
+    "example_id": 123,
+    "example_parameter1": "new_value"
+}
+
+### put example
+PUT http://localhost/api/example_put/
+
+{
+    "example_id": 123,
+    "example_parameter1": "new_value_a"
+    "example_parameter2": "new_value_b"
+}
+
+### delete example
+DELETE http://localhost/api/example_delete/?example_id=123
