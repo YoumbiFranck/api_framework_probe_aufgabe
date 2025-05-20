@@ -94,7 +94,9 @@ class EventRepository
 
             // delete file on the server
             foreach ($attachments as $attachment) {
-                $file_path = dirname(__DIR__, 2) . "/attachments/" . $attachment->file_path;
+                $file_path = dirname(__DIR__, 3) . '/' . $attachment->file_path;
+                $file_path = str_replace("\\", "/", $file_path); // Convert backslashes to forward slashes
+                # echo "Deleting file: " . $file_path . "\n"; check if file exists
                 if (file_exists($file_path)) {
                     unlink($file_path);
                 }
@@ -108,12 +110,7 @@ class EventRepository
         }
     }
 
-//    public function getEvent(int $event_id): ?object
-//    {
-//        return DB::table('events')
-//            ->where('id', $event_id)
-//            ->first();
-//    }
+
 
 
 }
