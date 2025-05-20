@@ -35,4 +35,7 @@ SimpleRouter::group(['prefix' => '/api'], function(){
     //----> Veranstaltung(Event) erstellen
     SimpleRouter::post('/create_event', 'EventController@createEvent');
 
+    //----> Veranstaltung(Event) löschen
+    SimpleRouter::delete('/delete_event', 'EventController@deleteEvent');
+
 });

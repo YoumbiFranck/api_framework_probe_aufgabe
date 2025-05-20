@@ -13,6 +13,15 @@ class EventRepository
             ->where('id', $user_id)->exists();
     }
 
+    //check if event exists
+    public function eventExists(int $event_id): bool
+    {
+        return DB::table('events')
+            ->where('id', $event_id)->exists();
+    }
+
+
+
     //create event
     public function createEvent(int $creator_id, string $title, ?string $description, string $start_time, string $end_time): ?int
     {
@@ -69,6 +78,42 @@ class EventRepository
         }
 
     }
+
+ public function deleteEvent(int $event_id): bool
+    {
+        try{
+            // get all attachments
+            $attachments = DB::table('attachments')
+                ->where('event_id', $event_id)
+                ->get();
+
+            // delete event (OnDelete CASCADE will delete all attachments)
+            $deleted = DB::table('events')
+                ->where('id', $event_id)
+                ->delete();
+
+            // delete file on the server
+            foreach ($attachments as $attachment) {
+                $file_path = dirname(__DIR__, 2) . "/attachments/" . $attachment->file_path;
+                if (file_exists($file_path)) {
+                    unlink($file_path);
+                }
+            }
+            return $deleted > 0;
+
+        }catch (\Exception $e){
+            // Log the error message
+            error_log("Error deleting event: " . $e->getMessage());
+            return false;
+        }
+    }
+
+//    public function getEvent(int $event_id): ?object
+//    {
+//        return DB::table('events')
+//            ->where('id', $event_id)
+//            ->first();
+//    }
 
 
 }

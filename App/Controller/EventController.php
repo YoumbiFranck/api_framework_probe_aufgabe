@@ -122,6 +122,37 @@ class EventController extends BaseController
 
     }
 
+    public function deleteEvent(): void
+    {
+        $input = $this->input_handler->bodyParams();
+        $event_id = $input["event_id"] ?? null;
+
+        if(empty($event_id) || !is_numeric($event_id)){
+            respondError(400, 'event_id is missing or invalid');
+            return;
+        }
+
+        //check if event exists
+        if(!$this->eventRepository->eventExists((int)$event_id)){
+            respondError(400, 'event_id does not exist');
+            return;
+        }
+
+        //delete event
+        $success = $this->eventRepository->deleteEvent((int)$event_id);
+        if(!$success){
+            respondError(500, "Failed to delete event");
+            return;
+        }
+
+        // Respond with success
+        respondSuccess([
+            "message" => "Event deleted successfully",
+            "event_id" => $event_id
+        ]);
+    }
+
+
     // get the last two parts of the path
     private function getLastTwoParts(string $path): string
     {
