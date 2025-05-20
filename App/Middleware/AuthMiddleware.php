@@ -8,13 +8,16 @@ use Pecee\Http\Request;
 
 class AuthMiddleware implements IMiddleware{
 
-    # protected csrfVerifier $csrf_verifier;
+    protected CsrfVerifier $csrfVerifier;
 	public function __construct(){
-		# $this->csrf_verifier = new CsrfVerifier();
+        $this->csrfVerifier = new CsrfVerifier();
 	}
 
 	public function handle(Request $request): void{
 		//TODO: check if user is logged in
+        // CSRF prüfen, falls POST/PUT/DELETE etc.
+        $this->csrfVerifier->handle($request);
+
 //        try {
 //            $this->csrf_verifier->handle($request);
 //        }catch (TokenMismatchException $e){

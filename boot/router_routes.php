@@ -24,4 +24,12 @@ SimpleRouter::group(['prefix' => '/api'], function(){
 		SimpleRouter::delete('/example_delete', 'ExampleController@exampleDelete');
 	});
 
+    //---------- erstmal für den Test ----------
+
+    //---> User registrieren
+    SimpleRouter::post('/register_user', 'UserController@createUser');
+
+    //---> User anmelden
+    SimpleRouter::post('/login_user', 'UserController@loginUser');
+
 });
