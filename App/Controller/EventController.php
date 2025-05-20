@@ -44,7 +44,7 @@ class EventController extends BaseController
             return;
         }
         if(empty($participants) || !is_array($participants)){
-            respondError(400, 'participants is missing');
+            respondError(400, 'participants is missing or is not an array');
             return;
         }
 
@@ -102,11 +102,12 @@ class EventController extends BaseController
 
         // Handle file upload (if any)
         if(!empty($_FILES["attachment"]) && $_FILES["attachment"]["error"] === UPLOAD_ERR_OK){
-            $attachment_path = __DIR__ . "attachments/{$event_id}_attachment.pdf";
+            $attachment_path = dirname(__DIR__, 2) . "/attachments/{$event_id}_attachment.pdf";
             if(!move_uploaded_file($_FILES["attachment"]["tmp_name"], $attachment_path)){
                 respondError(500, "Failed to move uploaded file");
                 return;
             }
+            $attachment_path = $this->getLastTwoParts($attachment_path);
             $this->eventRepository->addAttachment($event_id, $attachment_path);
         }
 
@@ -120,6 +121,22 @@ class EventController extends BaseController
 
 
     }
+
+    // get the last two parts of the path
+    private function getLastTwoParts(string $path): string
+    {
+        $normalizedPath = str_replace('\\', '/', $path);
+
+        $parts = explode('/', $normalizedPath);
+
+        if (count($parts) >= 2) {
+            return implode('/', array_slice($parts, -2, 2));
+        }
+
+        return $path;
+    }
+
+
 
 
 
