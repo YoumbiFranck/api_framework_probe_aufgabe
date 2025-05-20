@@ -7,10 +7,18 @@ use Illuminate\Database\Capsule\Manager as DB;
 class UserRepository
 {
 
-
     public function __construct()
     {
         //
+    }
+
+    // This method checks if a user with the given username or email already exists in the database.
+    public function userExists(string $username, string $email): bool
+    {
+        return DB::table('users')
+            ->where('username', $username)
+            ->orWhere('email', $email)
+            ->exists();
     }
 
     public function registerUser(string $username, string $email, string $password): bool
@@ -23,15 +31,6 @@ class UserRepository
             'password_hash' => $hashedPassword,
             'created_at' => date('Y-m-d H:i:s'),
         ]);
-    }
-
-    // This method checks if a user with the given username or email already exists in the database.
-    public function userExists(string $username, string $email): bool
-    {
-        return DB::table('users')
-            ->where('username', $username)
-            ->orWhere('email', $email)
-            ->exists();
     }
 
 
@@ -48,6 +47,7 @@ class UserRepository
 
         return null;
     }
+
 
 
 

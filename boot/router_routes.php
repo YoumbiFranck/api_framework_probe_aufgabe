@@ -32,4 +32,7 @@ SimpleRouter::group(['prefix' => '/api'], function(){
     //---> User anmelden
     SimpleRouter::post('/login_user', 'UserController@loginUser');
 
+    //----> Veranstaltung(Event) erstellen
+    SimpleRouter::post('/create_event', 'EventController@createEvent');
+
 });
