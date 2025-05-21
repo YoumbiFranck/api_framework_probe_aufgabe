@@ -236,6 +236,53 @@ class EventRepository
 
 
     // get all events
+
+
+
+    private function buildEventData($events): array
+    {
+        $eventIds = $events->pluck('id')->all();
+
+        // Teilnehmer für alle Events auf einmal holen
+        $participants = DB::table('event_participants as ep')
+            ->join('users as u', 'ep.user_id', '=', 'u.id')
+            ->whereIn('ep.event_id', $eventIds)
+            ->select('ep.event_id', 'ep.user_id', 'ep.status', 'u.username', 'u.email')
+            ->get()
+            ->groupBy('event_id');
+
+        // Attachments für alle Events auf einmal holen
+        $attachments = DB::table('attachments')
+            ->whereIn('event_id', $eventIds)
+            ->select('id', 'file_path', 'uploaded_at', 'event_id')
+            ->get()
+            ->groupBy('event_id');
+
+        // Creator-IDs sammeln und alle Creator auf einmal holen
+        $creatorIds = $events->pluck('creator_id')->unique()->all();
+        $creators = DB::table('users')
+            ->whereIn('id', $creatorIds)
+            ->select('id', 'username', 'email')
+            ->get()
+            ->keyBy('id');
+
+        $eventData = [];
+        foreach ($events as $event) {
+            $eventData[] = [
+                'id' => $event->id,
+                'title' => $event->title,
+                'description' => $event->description,
+                'start_time' => $event->start_time,
+                'end_time' => $event->end_time,
+                'created_at' => $event->created_at,
+                'creator' => $creators[$event->creator_id] ?? null,
+                'participants' => $participants[$event->id] ?? [],
+                'attachments' => $attachments[$event->id] ?? [],
+            ];
+        }
+        return $eventData;
+    }
+
     public function getEventsByUserId(int $user_id): ?array
     {
         $user = DB::table('users')
@@ -245,45 +292,15 @@ class EventRepository
         if (!$user) {
             return null;
         }
+
         $events = DB::table('events')
             ->where('creator_id', $user_id)
             ->get();
 
-        $eventData = [];
-        foreach ($events as $event) {
-            $participants = DB::table('event_participants as ep')
-                ->join('users as u', 'ep.user_id', '=', 'u.id')
-                ->where('ep.event_id', $event->id)
-                ->get();
-
-            $attachments = DB::table('attachments')
-                ->where('event_id', $event->id)
-                ->select('id', 'file_path', 'uploaded_at')
-                ->get();
-
-            $creator = DB::table('users')
-                ->where('id', $event->creator_id)
-                ->select('id', 'username', 'email')
-                ->first();
-
-            $eventData[] = [
-                'id' => $event->id,
-                'title' => $event->title,
-                'description' => $event->description,
-                'start_time' => $event->start_time,
-                'end_time' => $event->end_time,
-                'created_at' => $event->created_at,
-                'creator' => $creator,
-                'participants' => $participants,
-                'attachments' => $attachments,
-            ];
-        }
-
         return [
             'user' => $user,
-            'events' => $eventData,
+            'events' => $this->buildEventData($events),
         ];
-
     }
 
     public function getEventsByEventId(int $event_id): ?array
@@ -292,41 +309,11 @@ class EventRepository
             ->where('id', $event_id)
             ->get();
 
-        $eventData = [];
-        foreach ($events as $event) {
-            $participants = DB::table('event_participants as ep')
-                ->join('users as u', 'ep.user_id', '=', 'u.id')
-                ->where('ep.event_id', $event->id)
-                ->get();
-
-            $attachments = DB::table('attachments')
-                ->where('event_id', $event->id)
-                ->select('id', 'file_path', 'uploaded_at')
-                ->get();
-
-            $creator = DB::table('users')
-                ->where('id', $event->creator_id)
-                ->select('id', 'username', 'email')
-                ->first();
-
-            $eventData[] = [
-                'id' => $event->id,
-                'title' => $event->title,
-                'description' => $event->description,
-                'start_time' => $event->start_time,
-                'end_time' => $event->end_time,
-                'created_at' => $event->created_at,
-                'creator' => $creator,
-                'participants' => $participants,
-                'attachments' => $attachments,
-            ];
-        }
-
         return [
-            'events' => $eventData,
+            'events' => $this->buildEventData($events),
         ];
-
     }
+
 
 
     // get an event
