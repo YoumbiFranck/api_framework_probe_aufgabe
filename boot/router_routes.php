@@ -38,4 +38,11 @@ SimpleRouter::group(['prefix' => '/api'], function(){
     //----> Veranstaltung(Event) löschen
     SimpleRouter::delete('/delete_event', 'EventController@deleteEvent');
 
+    //----> Veranstaltung(Event) aktualisieren
+    SimpleRouter::put('/update_event', 'EventController@updateEvent');
+    SimpleRouter::post('/update_event', 'EventController@updateEvent');
+
+    //----> Veranstaltung(Event) abrufen
+    SimpleRouter::get('/get_event', 'EventController@getEvent');
+
 });
