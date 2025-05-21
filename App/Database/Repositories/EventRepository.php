@@ -235,6 +235,100 @@ class EventRepository
     }
 
 
+    // get all events
+    public function getEventsByUserId(int $user_id): ?array
+    {
+        $user = DB::table('users')
+            ->select('id', 'username', 'email')
+            ->where('id', $user_id)
+            ->first();
+        if (!$user) {
+            return null;
+        }
+        $events = DB::table('events')
+            ->where('creator_id', $user_id)
+            ->get();
+
+        $eventData = [];
+        foreach ($events as $event) {
+            $participants = DB::table('event_participants as ep')
+                ->join('users as u', 'ep.user_id', '=', 'u.id')
+                ->where('ep.event_id', $event->id)
+                ->get();
+
+            $attachments = DB::table('attachments')
+                ->where('event_id', $event->id)
+                ->select('id', 'file_path', 'uploaded_at')
+                ->get();
+
+            $creator = DB::table('users')
+                ->where('id', $event->creator_id)
+                ->select('id', 'username', 'email')
+                ->first();
+
+            $eventData[] = [
+                'id' => $event->id,
+                'title' => $event->title,
+                'description' => $event->description,
+                'start_time' => $event->start_time,
+                'end_time' => $event->end_time,
+                'created_at' => $event->created_at,
+                'creator' => $creator,
+                'participants' => $participants,
+                'attachments' => $attachments,
+            ];
+        }
+
+        return [
+            'user' => $user,
+            'events' => $eventData,
+        ];
+
+    }
+
+    public function getEventsByEventId(int $event_id): ?array
+    {
+        $events = DB::table('events')
+            ->where('id', $event_id)
+            ->get();
+
+        $eventData = [];
+        foreach ($events as $event) {
+            $participants = DB::table('event_participants as ep')
+                ->join('users as u', 'ep.user_id', '=', 'u.id')
+                ->where('ep.event_id', $event->id)
+                ->get();
+
+            $attachments = DB::table('attachments')
+                ->where('event_id', $event->id)
+                ->select('id', 'file_path', 'uploaded_at')
+                ->get();
+
+            $creator = DB::table('users')
+                ->where('id', $event->creator_id)
+                ->select('id', 'username', 'email')
+                ->first();
+
+            $eventData[] = [
+                'id' => $event->id,
+                'title' => $event->title,
+                'description' => $event->description,
+                'start_time' => $event->start_time,
+                'end_time' => $event->end_time,
+                'created_at' => $event->created_at,
+                'creator' => $creator,
+                'participants' => $participants,
+                'attachments' => $attachments,
+            ];
+        }
+
+        return [
+            'events' => $eventData,
+        ];
+
+    }
+
+
     // get an event
     public function getEvent(int $event_id): ?object
     {

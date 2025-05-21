@@ -218,22 +218,41 @@ class EventController extends BaseController
     {
         $event_id = $this->input_handler->queryParams()["event_id"] ?? null;
         $user_id = $this->input_handler->queryParams()["user_id"] ?? null;
-        if((empty($event_id) || !is_numeric($event_id)) || (empty($user_id) || !is_numeric($user_id))){
-            respondError(400, 'event_id or user_id is missing or invalid');
+
+        // if both event_id and user_id are empty or invalid, return error
+        if ((empty($event_id) || !is_numeric($event_id)) && (empty($user_id) || !is_numeric($user_id))) {
+            respondError(400, 'Either event_id or user_id must be provided and valid');
             return;
         }
 
-        //check if event exists
-        if(!$this->eventRepository->eventExists((int)$event_id)){
-            respondError(400, 'event_id does not exist');
-            return;
+        // if event_id is provided, check if it exists
+        if (!empty($event_id) && is_numeric($event_id)) {
+            if (!$this->eventRepository->eventExists((int)$event_id)) {
+                respondError(400, 'event_id does not exist');
+                return;
+            }
+            $data = $this->eventRepository->getEventsByEventId((int)$event_id);
+            if (!$data) {
+                respondError(400, 'event_id does not exist');
+                return;
+            }
+            respondSuccess($data);
         }
 
-        //check if user exists
-        if(!$this->eventRepository->userExists((int)$user_id)){
-            respondError(400, 'user_id does not exist');
-            return;
+        // if user_id is provided, check if it exists
+        if (!empty($user_id) && is_numeric($user_id)) {
+            if (!$this->eventRepository->userExists((int)$user_id)) {
+                respondError(400, 'user_id does not exist');
+                return;
+            }
+            $data = $this->eventRepository->getEventsByUserId((int)$user_id);
+            if (!$data) {
+                respondError(400, 'user_id does not exist');
+                return;
+            }
+            respondSuccess($data);
         }
+
 
     }
 
