@@ -243,7 +243,7 @@ class EventRepository
     {
         $eventIds = $events->pluck('id')->all();
 
-        // Teilnehmer für alle Events auf einmal holen
+        // get all participants for all events at once
         $participants = DB::table('event_participants as ep')
             ->join('users as u', 'ep.user_id', '=', 'u.id')
             ->whereIn('ep.event_id', $eventIds)
@@ -251,14 +251,14 @@ class EventRepository
             ->get()
             ->groupBy('event_id');
 
-        // Attachments für alle Events auf einmal holen
+        // get all attachments for all events at once
         $attachments = DB::table('attachments')
             ->whereIn('event_id', $eventIds)
             ->select('id', 'file_path', 'uploaded_at', 'event_id')
             ->get()
             ->groupBy('event_id');
 
-        // Creator-IDs sammeln und alle Creator auf einmal holen
+        // get all creators for all events at once
         $creatorIds = $events->pluck('creator_id')->unique()->all();
         $creators = DB::table('users')
             ->whereIn('id', $creatorIds)

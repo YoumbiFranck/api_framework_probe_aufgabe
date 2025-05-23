@@ -213,7 +213,7 @@ class EventController extends BaseController
 
     }
 
-    // Termin anhang user_id anzeigen
+    // retrieve event by event_id or user_id
     public function getEvent(): void
     {
         $event_id = $this->input_handler->queryParams()["event_id"] ?? null;

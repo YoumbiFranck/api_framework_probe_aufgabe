@@ -175,7 +175,7 @@ Nach dem Login kann der Benutzer ein Event erstellen. Die Angabe der `creator_id
 
 Login-Token müssen im Header der Anfrage mitgesendet werden.
 
-![Hier ein Screenshot eines erfolgreichen Logins einfügen](dokumentation/img/insert_token.png)
+![insert token](img/insert_token.png)
 
 Nach Einfügen des Tokens in den Header kann der Benutzer ein Event erstellen.
 
@@ -272,7 +272,7 @@ Zurückgegeben werden u. a.:
 * Anhang (falls vorhanden)
 * Start- und Enddatum
 
-![Hier ein Screenshot eines erfolgreichen Logins einfügen](dokumentation/img/get_event.png)
+![abrufen](img/get_event.png)
 
 Beispielhafter Bash-Befehl (generiert mit Postman):
 

@@ -293,7 +293,7 @@ Zurückgegeben werden u. a.:
 * Anhang (falls vorhanden)
 * Start- und Enddatum
 
-![Hier ein Screenshot eines erfolgreichen Logins einfügen](dokumentation/img/get_event.png)
+![abrufen](dokumentation/img/get_event.png)
 
 Beispielhafter Bash-Befehl (generiert mit Postman):
 
