@@ -1,5 +1,17 @@
 # Projektdokumentation
 
+## Inhaltsverzeichnis
+- [Zu bearbeitende Aufgaben](#zu-bearbeitende-aufgaben)
+- [Datenbank](#datenbank)
+  - [Tabellenübersicht](#tabellenübersicht)
+- [Benutzerregistrierung](#benutzerregistrierung)
+- [Anmeldung (Login)](#anmeldung-login)
+- [Abmeldung (Logout)](#abmeldung-logout)
+- [Erstellung eines Events](#erstellung-eines-events)
+- [Löschen eines Events](#löschen-eines-events)
+- [Bearbeiten eines Events](#bearbeiten-eines-events)
+- [Abrufen eines Events](#abrufen-eines-events)
+
 ## Zu bearbeitende Aufgaben
 
 Ziel ist es, eine API zu entwickeln. Die API soll Schnittstellen zur Verfügung stellen, um Termine zu verwalten.
@@ -7,18 +19,18 @@ Folgende Anwendungsfälle sollen implementiert werden:
 
 Benutzer registrieren/anmelden:
 - Registrierung
-    - Benutzername
-    - E-Mail
-    - Passwort
+  - Benutzername
+  - E-Mail
+  - Passwort
 - Anmeldung/Abmeldung
 - AuthMiddleware anpassen um zu prüfen, ob ein User eingeloggt ist
 
 Terminverwaltung (für angemeldete Benutzer):
 - Termin anlegen
-    - Beschreibung zum Termin
-    - Zeitraum
-    - Anhang (File Upload)
-    - Benutzer einladen
+  - Beschreibung zum Termin
+  - Zeitraum
+  - Anhang (File Upload)
+  - Benutzer einladen
 - Termin löschen
 - Termin aktualisieren
 - Termine anzeigen
@@ -39,7 +51,7 @@ Folgende Funktionen sind optional:
 Der erste Schritt zur erfolgreichen Umsetzung dieses Projekts ist die Entwicklung eines durchdachten und stabilen Datenbankmodells. Eine gut strukturierte und normalisierte Datenbank erleichtert nicht nur die Wartung und Weiterentwicklung des Projekts, sondern beugt auch Dateninkonsistenzen vor.
 
 Nachfolgend das Entity-Relationship-Modell (ERM), das die für dieses Projekt genutzte Datenbankstruktur abbildet:
-[!img](img/erm_diagram.png)
+![img](img/erm_diagram.png)
 
 ### Tabellenübersicht
 
@@ -80,7 +92,7 @@ Sind alle Eingaben gültig:
 * Ein neues Nutzerkonto wird erstellt.
 * Anschließend kann sich der Nutzer mit seinen Zugangsdaten anmelden.
 
-[!registration](img/register_user.png)
+![registration](img/register_user.png)
 
 Beispielhafter Bash-Befehl (generiert mit Postman):
 ```bash
@@ -96,7 +108,7 @@ curl --location 'http://test-project.localhost/api/register_user/' \
 
 ## Anmeldung (Login)
 
-* **API-Endpunkt**: `http://test-project.localhost/api/login`
+* **API-Endpunkt**: `http://test-project.localhost/api/login_user`
 
 Nach erfolgreicher Registrierung kann sich der Nutzer anmelden.
 Der Ablauf ist wie folgt:
@@ -107,35 +119,42 @@ Der Ablauf ist wie folgt:
 4. Dieser Token wird an den Client zurückgegeben und dient zur Authentifizierung bei zukünftigen Anfragen.
 
 🕒 **Gültigkeitsdauer des Tokens**: 1 Stunde
-*(Hier ein Screenshot eines erfolgreichen Logins einfügen)*
 
-Beispielhafter Bash-Befehl:
+![login](img/login_user.png)
+
+Beispielhafter Bash-Befehl (generiert mit Postman):
 
 ```bash
-curl --location 'http://test-project.localhost/api/create_event?creator_id=1' \
---form 'title="Projektsitzung"' \
---form 'description="Besprechung der Funktionen"' \
---form 'start_date="2025-06-01 10:00:00"' \
---form 'end_date="2025-06-01 12:00:00"' \
---form 'participants="2,3,4"' \
---form 'attachment=@"/pfad/zur/datei.pdf"'
+curl --location 'http://test-project.localhost/api/login_user' \
+--header 'Content-Type: application/x-www-form-urlencoded' \
+--header 'Cookie: PHPSESSID=pbp6noum63bj6su8u7mok0t5cn' \
+--data-urlencode 'email_username=user13@gmail.com' \
+--data-urlencode 'password=1234qwer'
 ```
 
 ---
 
 ## Abmeldung (Logout)
 
-* **API-Endpunkt**: `http://test-project.localhost/api/logout` *(optional)*
+* **API-Endpunkt**: `http://test-project.localhost/api/logout_user` *(optional)*
 
 Für die Abmeldung sind keine Serveraktionen erforderlich.
 Die Abmeldung erfolgt clientseitig, indem der zuvor gespeicherte **JWT-Token** (z. B. im `localStorage`) gelöscht wird.
 
+![logout](img/logout_user.png)
+
+Beispielhafter Bash-Befehl (generiert mit Postman):
+
+```bash
+curl --location 'http://test-project.localhost/api/logout_user' \
+--header 'Cookie: PHPSESSID=pbp6noum63bj6su8u7mok0t5cn'
+```
 
 ---
 
 ## Erstellung eines Events
 
-**API-Endpunkt:** `http://test-project.localhost/api/create_event`
+**API-Endpunkt:** `http://test-project.localhost/api/create_event?creator_id=1`
 
 Nach dem Login kann der Benutzer ein Event erstellen. Die Angabe der `creator_id` (ID des Erstellers) ist zwingend erforderlich und muss über die URL-Parameter übermittelt werden, z. B.: `?creator_id=5`.
 
@@ -148,22 +167,34 @@ Nach dem Login kann der Benutzer ein Event erstellen. Die Angabe der `creator_id
 * Jeder eingeladene Teilnehmer muss in der Datenbank existieren. Andernfalls wird ein Fehler ausgegeben.
 * Es kann **eine einzelne PDF-Datei** an das Event angehängt werden:
 
-    * Die Datei wird beim Hochladen umbenannt und auf dem Server gespeichert – Format: `event_id_[attachment.pdf]`.
-    * Der Speicherpfad wird in der Datenbank hinterlegt.
+  * Die Datei wird beim Hochladen umbenannt und auf dem Server gespeichert – Format: `event_id_[attachment.pdf]`.
+  * Der Speicherpfad wird in der Datenbank hinterlegt.
 * Es müssen ein **Startdatum** und ein **Enddatum** angegeben werden.
 
-    * Das Startdatum muss vor dem Enddatum liegen.
+  * Das Startdatum muss vor dem Enddatum liegen.
 
-#### Beispiel (cURL-Anfrage):
+Login-Token müssen im Header der Anfrage mitgesendet werden.
+
+![Hier ein Screenshot eines erfolgreichen Logins einfügen](dokumentation/img/insert_token.png)
+
+Nach Einfügen des Tokens in den Header kann der Benutzer ein Event erstellen.
+
+![create_event](img/create_event.png)
+
+Beispielhafter Bash-Befehl (generiert mit Postman):
 
 ```bash
-curl --location 'http://test-project.localhost/api/create_event?creator_id=1' \
---form 'title="Projektbesprechung"' \
---form 'description="Diskussion der Funktionalitäten"' \
---form 'start_date="2025-06-01 10:00:00"' \
---form 'end_date="2025-06-01 12:00:00"' \
---form 'participants="2,3,4"' \
---form 'attachment=@"/pfad/zur/datei.pdf"'
+curl --location 'http://test-project.localhost/api/create_event?creator_id=2' \
+--header 'Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxMywidXNlcm5hbWUiOiJ1c2VyMTMiLCJlbWFpbCI6InVzZXIxM0BnbWFpbC5jb20iLCJleHAiOjE3NDc5ODg1NTl9.a0zBSiuM-KQNZwbUM6RwCn15z8-8pgMUaMSAI-xTRX4' \
+--header 'Cookie: PHPSESSID=pbp6noum63bj6su8u7mok0t5cn' \
+--form 'title="event_3"' \
+--form 'start_time="2025-05-21 09:00:00"' \
+--form 'end_time="2025-05-21 10:00:00"' \
+--form 'user_id[]="2"' \
+--form 'user_id[]="1"' \
+--form 'user_id[]="13"' \
+--form 'description="this is event_3"' \
+--form 'attachment=@"/C:/Users/Probearbeit/Downloads/document_2.pdf"'
 ```
 
 ---
@@ -178,19 +209,25 @@ Authentifizierte Benutzer können ein Event löschen. Dabei gilt:
 * Die `event_id` muss im Body der Anfrage mitgesendet werden.
 * Falls das Event nicht existiert, wird eine Fehlermeldung zurückgegeben.
 
-#### Beispiel (cURL-Anfrage):
+![delete_event](img/delete_event.png)
+
+Beispielhafter Bash-Befehl (generiert mit Postman):
 
 ```bash
-curl --location --request POST 'http://test-project.localhost/api/delete_event' \
---header 'Authorization: Bearer [JWT_TOKEN]' \
---form 'event_id=12'
+curl --location --request DELETE 'http://test-project.localhost/api/delete_event' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxMywidXNlcm5hbWUiOiJ1c2VyMTMiLCJlbWFpbCI6InVzZXIxM0BnbWFpbC5jb20iLCJleHAiOjE3NDc5ODg1NTl9.a0zBSiuM-KQNZwbUM6RwCn15z8-8pgMUaMSAI-xTRX4' \
+--header 'Cookie: PHPSESSID=pbp6noum63bj6su8u7mok0t5cn' \
+--data '{
+    "event_id" : "18"
+}'
 ```
 
 ---
 
 ## Bearbeiten eines Events
 
-**API-Endpunkt:** `http://test-project.localhost/api/update_event`
+**API-Endpunkt:** `http://test-project.localhost/api/update_event?event_id=4`
 
 Authentifizierte Benutzer können bestehende Events bearbeiten:
 
@@ -200,22 +237,28 @@ Authentifizierte Benutzer können bestehende Events bearbeiten:
 
 > 💡 *Es wird eine POST-Anfrage verwendet (statt PUT oder PATCH), um Dateiübertragungen mit `multipart/form-data` zu ermöglichen.*
 
-#### Beispiel (cURL-Anfrage):
+![update_event](img/update_event.png)
+
+Beispielhafter Bash-Befehl (generiert mit Postman):
 
 ```bash
-curl --location --request POST 'http://test-project.localhost/api/update_event' \
---header 'Authorization: Bearer [JWT_TOKEN]' \
---form 'event_id=12' \
---form 'title="Neuer Titel"' \
---form 'participants="5,6"' \
---form 'attachment=@"/neuer/pfad/zur/datei.pdf"'
+curl --location 'http://test-project.localhost/api/update_event?event_id=16' \
+--header 'Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxMywidXNlcm5hbWUiOiJ1c2VyMTMiLCJlbWFpbCI6InVzZXIxM0BnbWFpbC5jb20iLCJleHAiOjE3NDc5ODg1NTl9.a0zBSiuM-KQNZwbUM6RwCn15z8-8pgMUaMSAI-xTRX4' \
+--header 'Cookie: PHPSESSID=pbp6noum63bj6su8u7mok0t5cn' \
+--form 'title="event_18_updated"' \
+--form 'description="this event is updated"' \
+--form 'start_time="2025-05-21 09:35:00"' \
+--form 'end_time="2025-05-21 10:30:00"' \
+--form 'user_id[]="9"' \
+--form 'user_id[]="10"' \
+--form 'user_id[]="11"'
 ```
 
 ---
 
 ## Abrufen eines Events
 
-**API-Endpunkt:** `http://test-project.localhost/api/get_event`
+**API-Endpunkt:** `http://test-project.localhost/api/get_event?event_id=12`
 
 Authentifizierte Benutzer können Event-Informationen auf zwei Arten abrufen:
 
@@ -229,11 +272,12 @@ Zurückgegeben werden u. a.:
 * Anhang (falls vorhanden)
 * Start- und Enddatum
 
-#### Beispiel (cURL-Anfrage):
+![Hier ein Screenshot eines erfolgreichen Logins einfügen](dokumentation/img/get_event.png)
+
+Beispielhafter Bash-Befehl (generiert mit Postman):
 
 ```bash
 curl --location 'http://test-project.localhost/api/get_event?event_id=12' \
---header 'Authorization: Bearer [JWT_TOKEN]'
+--header 'Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxMywidXNlcm5hbWUiOiJ1c2VyMTMiLCJlbWFpbCI6InVzZXIxM0BnbWFpbC5jb20iLCJleHAiOjE3NDc5ODg1NTl9.a0zBSiuM-KQNZwbUM6RwCn15z8-8pgMUaMSAI-xTRX4' \
+--header 'Cookie: PHPSESSID=pbp6noum63bj6su8u7mok0t5cn'
 ```
-
-
