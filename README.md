@@ -60,7 +60,7 @@ Folgende Funktionen sind optional:
 Der erste Schritt zur erfolgreichen Umsetzung dieses Projekts ist die Entwicklung eines durchdachten und stabilen Datenbankmodells. Eine gut strukturierte und normalisierte Datenbank erleichtert nicht nur die Wartung und Weiterentwicklung des Projekts, sondern beugt auch Dateninkonsistenzen vor.
 
 Nachfolgend das Entity-Relationship-Modell (ERM), das die für dieses Projekt genutzte Datenbankstruktur abbildet:
-[!img](dokumentation/img/erm_diagram.png)
+![img](dokumentation/img/erm_diagram.png)
 
 ### Tabellenübersicht
 
@@ -101,7 +101,7 @@ Sind alle Eingaben gültig:
 * Ein neues Nutzerkonto wird erstellt.
 * Anschließend kann sich der Nutzer mit seinen Zugangsdaten anmelden.
 
-[!registration](dokumentation/img/register_user.png)
+![registration](dokumentation/img/register_user.png)
 
 Beispielhafter Bash-Befehl (generiert mit Postman):
 ```bash
