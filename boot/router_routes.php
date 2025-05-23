@@ -24,25 +24,30 @@ SimpleRouter::group(['prefix' => '/api'], function(){
 		SimpleRouter::delete('/example_delete', 'ExampleController@exampleDelete');
 	});
 
-    //---------- erstmal für den Test ----------
-
     //---> User registrieren
     SimpleRouter::post('/register_user', 'UserController@createUser');
 
     //---> User anmelden
     SimpleRouter::post('/login_user', 'UserController@loginUser');
+    //----> Logout-User
+    SimpleRouter::get('/logout_user', 'UserController@logoutUser');
 
-    //----> Veranstaltung(Event) erstellen
-    SimpleRouter::post('/create_event', 'EventController@createEvent');
+    //---------- erstmal für den Test ----------
+    SimpleRouter::group(['middleware' => AuthMiddleware::class], function(){
+        //----> Veranstaltung(Event) abrufen
+        SimpleRouter::get('/get_event', 'EventController@getEvent');
 
-    //----> Veranstaltung(Event) löschen
-    SimpleRouter::delete('/delete_event', 'EventController@deleteEvent');
+        //----> Veranstaltung(Event) erstellen
+        SimpleRouter::post('/create_event', 'EventController@createEvent');
 
-    //----> Veranstaltung(Event) aktualisieren
-    SimpleRouter::put('/update_event', 'EventController@updateEvent');
-    SimpleRouter::post('/update_event', 'EventController@updateEvent');
+        //----> Veranstaltung(Event) löschen
+        SimpleRouter::delete('/delete_event', 'EventController@deleteEvent');
 
-    //----> Veranstaltung(Event) abrufen
-    SimpleRouter::get('/get_event', 'EventController@getEvent');
+        //----> Veranstaltung(Event) aktualisieren
+        SimpleRouter::put('/update_event', 'EventController@updateEvent');
+        SimpleRouter::post('/update_event', 'EventController@updateEvent');
+
+    });
+
 
 });

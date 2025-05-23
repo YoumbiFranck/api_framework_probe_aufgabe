@@ -1,0 +1,41 @@
+### Register User
+POST /api/register_user/ HTTP/1.1
+Host: test-project.localhost
+Content-Type: application/x-www-form-urlencoded
+Cookie: PHPSESSID=pbp6noum63bj6su8u7mok0t5cn
+Content-Length: 59
+
+username=user11&email=user11%40gmail.com&password=1234qwert
+
+
+
+### UserLogin
+POST /api/login_user HTTP/1.1
+Host: test-project.localhost
+Content-Type: application/x-www-form-urlencoded
+Cookie: CSRF-TOKEN=71f3f86a95b7ad2360fb70e8fb18f3ccd11faaaf149014b23bdd373e356f961c; PHPSESSID=pbp6noum63bj6su8u7mok0t5cn
+Content-Length: 51
+
+email_username=user3%40gmail.com&password=1234qwert
+
+### UserLogout
+GET /api/logout_user HTTP/1.1
+Host: test-project.localhost
+Cookie: CSRF-TOKEN=71f3f86a95b7ad2360fb70e8fb18f3ccd11faaaf149014b23bdd373e356f961c; PHPSESSID=pbp6noum63bj6su8u7mok0t5cn
+
+
+### Create Event
+POST http://test-project.localhost/api/create_event?creator_id=5
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoyLCJ1c2VybmFtZSI6InVzZXIyIiwiZW1haWwiOiJ1c2VyMkBnbWFpbC5jb20iLCJleHAiOjE3NDc5MTcyMTJ9.z0RPtJHKYKNUrN08fV-2uPwTIil6Ssz2mIdYVQIINRM
+Cookie: CSRF-TOKEN=71f3f86a95b7ad2360fb70e8fb18f3ccd11faaaf149014b23bdd373e356f961c; PHPSESSID=pbp6noum63bj6su8u7mok0t5cn
+
+Content-Type: multipart/form-data
+
+title=event_3
+start_time=2025-05-21 09:00:00
+end_time=2025-05-21 10:00:00
+user_id[]=1
+user_id[]=2
+user_id[]=5
+description=this is event_3
+attachment=@"/C:/Users/Probearbeit/Downloads/document_2.pdf"

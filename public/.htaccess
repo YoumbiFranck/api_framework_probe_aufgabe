@@ -2,4 +2,5 @@ RewriteEngine on
 RewriteCond %{SCRIPT_FILENAME} !-f
 RewriteCond %{SCRIPT_FILENAME} !-d
 RewriteCond %{SCRIPT_FILENAME} !-l
+SetEnvIf Authorization .+ HTTP_AUTHORIZATION=$0
 RewriteRule ^(.*)$ index.php

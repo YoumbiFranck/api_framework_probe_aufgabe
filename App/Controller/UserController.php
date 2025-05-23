@@ -4,6 +4,8 @@ namespace App\Controller;
 
 use App\Controller\BaseController;
 use App\Database\Repositories\UserRepository;
+use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
 
 class UserController extends BaseController
 {
@@ -79,8 +81,16 @@ class UserController extends BaseController
 
         $data = $this->repository->loginUser($identifier, $password);
         if ($data) {
-            // Entferne sensible Felder wie Passwort-Hash
-            unset($data->password_hash);
+            unset($data->password_hash); // Remove the password hash from the response
+            $payload = [
+                'user_id' => $data->id,
+                'username' => $data->username,
+                'email' => $data->email,
+                'exp' => time() + 3600, // Token expiration time (1 hour)
+            ];
+            $jwt = JWT::encode($payload, $_ENV['JWT_SECRET'], $_ENV['JWT_ALGORITHM']);
+            $data->token = $jwt;
+
             respondSuccess($data);
         } else {
             respondError(401, 'Invalid credentials');
@@ -88,6 +98,10 @@ class UserController extends BaseController
     }
 
 
+    public function logoutUser(): void
+    {
+        respondSuccess(['message' => 'User successfully logged out. Please delete the token on the client side.']);
+    }
 
 
 }
